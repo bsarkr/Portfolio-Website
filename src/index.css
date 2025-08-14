@@ -1,0 +1,222 @@
+/*
+index.css
+*/
+
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* ---------- Design ---------- */
+:root {
+  /* Pink/Purple accent sweep */
+  --accent-from: #a855f7;
+  --accent-mid: #c084fc;
+  --accent-to: #ec4899;
+
+
+  /* Subtle silver*/
+  --silver-1: #f3f4f6;
+  --silver-2: #e5e7eb;
+  --silver-3: #d1d5db;
+
+  --header-h: 64px;
+}
+
+html {
+  scroll-behavior: smooth;
+}
+
+/* Dark, space‑gray background*/
+#app-root {
+  @apply min-h-screen text-white;
+  background: linear-gradient(180deg, #1a1a1a, #111);
+  /* space gray gradient */
+}
+
+/* Push content below header*/
+main {
+  padding-top: calc(var(--header-h) + 12px);
+}
+
+/* ===== Hero ===== */
+.hero {
+  @apply mx-auto max-w-6xl px-6 pt-16 md:pt-24 pb-16 md:pb-24 relative;
+}
+
+.hero__inner {
+  @apply grid gap-10 md:grid-cols-2 md:gap-16 items-center;
+}
+
+.hero__left {
+  @apply text-left;
+}
+
+/* Light text on dark background */
+.hero__pretitle {
+  @apply text-base md:text-lg text-gray-300;
+}
+
+/* Gradient title */
+.hero__title {
+  @apply mt-2 text-4xl md:text-6xl font-semibold tracking-tight leading-tight;
+  background-image: linear-gradient(90deg, var(--accent-from), var(--accent-to));
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+  /* gradient text */
+}
+
+.hero__subtitle {
+  @apply mt-3 text-xl md:text-2xl text-gray-200;
+}
+
+.highlight-role {
+  font-weight: 600;
+  background-image: linear-gradient(90deg, #06b6d4, #22d3ee);
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+}
+
+.hero__paragraph {
+  @apply mt-6 text-base md:text-lg leading-relaxed text-gray-400;
+}
+
+/* Right column / photo container */
+.hero__right {
+  @apply flex justify-center md:justify-end relative;
+}
+
+/* Photo: chrome ring, and gentle hover */
+.hero__photo {
+  @apply object-cover rounded-2xl shadow-lg;
+  width: 26rem;
+  height: auto;
+  /* keep natural aspect ratio */
+  padding: 8px;
+
+  background:
+    conic-gradient(from 0deg,
+      var(--accent-from),
+      var(--accent-mid),
+      var(--accent-to),
+      var(--accent-from));
+  border-radius: 1rem;
+  transition: transform .35s ease, box-shadow .35s ease, filter .35s ease;
+  filter: saturate(1.03);
+}
+
+.hero__photo:hover {
+  transform: translateY(-2px);
+  box-shadow:
+    0 8px 20px rgba(168, 85, 247, 0.35),
+    /* purple glow */
+    0 4px 12px rgba(236, 72, 153, 0.25);
+  /* pink glow */
+}
+
+/* Subtle vertical glow on the left of the photo */
+.hero__right::before {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: 1rem;
+  /* slightly inside/left of the photo */
+  width: 30%;
+  /* narrow stripe of glow */
+  height: 110%;
+  /* match photo height */
+  pointer-events: none;
+  background: radial-gradient(ellipse at right center,
+      color-mix(in oklab, var(--accent-mid) 50%, transparent) 0%,
+      transparent 80%);
+  filter: blur(40px);
+  opacity: 0.7;
+  animation: floatGlow 9s ease-in-out infinite alternate;
+}
+
+@keyframes floatGlow {
+  0% {
+    transform: translate(4px, 0) scale(1.02);
+    opacity: .55;
+  }
+
+  100% {
+    transform: translate(-6px, -6px) scale(1.06);
+    opacity: .65;
+  }
+}
+
+/* ===== Header (transparent glass) ===== */
+.site-header {
+  @apply z-50 backdrop-blur-xl;
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: var(--header-h);
+  background: rgba(255, 255, 255, 0.06);
+  /* transparent glass */
+  border-bottom: 1px solid rgba(255, 255, 255, .12);
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.2);
+}
+
+.site-header__inner {
+  @apply mx-auto max-w-6xl px-6 flex items-center justify-between;
+  height: 100%;
+  /* vertically center contents */
+}
+
+/* Gradient logo text */
+.site-logo {
+  @apply text-lg md:text-xl font-semibold tracking-tight;
+  background-image: linear-gradient(90deg, var(--accent-from), var(--accent-to));
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+}
+
+/* Nav links and gradient underline hover */
+.site-nav {
+  @apply hidden sm:flex gap-6 md:gap-8 text-sm font-medium;
+}
+
+.site-nav__link {
+  @apply relative;
+  color: rgba(255, 255, 255, 0.92);
+  transition: color 0.2s ease;
+}
+
+.site-nav__link:hover {
+  color: #fff;
+}
+
+.site-nav__link::after {
+  content: "";
+  position: absolute;
+  left: 0;
+  bottom: -6px;
+  width: 100%;
+  height: 2px;
+  background-image: linear-gradient(90deg, var(--accent-from), var(--accent-to));
+  transform: scaleX(0);
+  transform-origin: left;
+  transition: transform 0.25s ease;
+  border-radius: 9999px;
+}
+
+.site-nav__link:hover::after {
+  transform: scaleX(1);
+}
+
+::selection {
+  background: color-mix(in oklab, var(--accent-mid) 25%, white);
+}
+
+@media (min-width: 1440px) {
+
+  .hero,
+  .site-header__inner {
+    max-width: 1200px;
+  }
+}
