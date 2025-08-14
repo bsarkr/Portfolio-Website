@@ -4,7 +4,7 @@ This is my **personal developer portfolio**, designed to showcase my projects, s
 The design is heavily inspired by **Apple’s minimalistic UI style** – smooth gradients, polished typography, and a focus on simplicity that lets the content speak for itself.  
 It’s built with **React + Vite** for blazing-fast performance, and deployed on **AWS** for scalability and reliability.
 
-Currently, this website is not yet hosted. However, once this website is operational, I will be hosting it was AWS
+Currently, this website is not yet hosted. However, once this website is operational, I will be hosting it with AWS
 ---
 
 ## Design Inspiration
