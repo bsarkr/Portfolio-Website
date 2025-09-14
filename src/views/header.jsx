@@ -4,22 +4,23 @@
 // Renders the global header with site logo and navigation links
 // (internal pages + external profiles).
 
+import { Link } from "react-router-dom";
+
 export default function Header() {
     return (
         <header className="site-header">
             <div className="site-header__inner">
-                {/* Logo linking back to homepage */}
-                <a href="/" className="site-logo">
-                    Bilash Sarkar
-                </a>
+                {/* Logo / Name (click -> home) */}
+                <Link to="/" className="site-logo">Bilash Sarkar</Link>
 
-                {/* Navigation: internal site sections + external links */}
+                {/* Navigation */}
                 <nav className="site-nav">
-                    <a href="/about/" className="site-nav__link">About Me</a>
-                    <a href="/resume/" className="site-nav__link">Resume</a>
-                    <a href="/skills/" className="site-nav__link">Skills</a>
-                    <a href="/projects.html" className="site-nav__link">Projects</a>
+                    <Link to="/about" className="site-nav__link">About Me</Link>
+                    <Link to="/resume" className="site-nav__link">Resume</Link>
+                    <Link to="/skills" className="site-nav__link">Skills</Link>
+                    <Link to="/projects" className="site-nav__link">Projects</Link>
 
+                    {/* External Links */}
                     <a
                         href="https://github.com/bsarkr"
                         className="site-nav__link"

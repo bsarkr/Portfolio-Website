@@ -9,6 +9,35 @@ resume embed, and shared components.
 @tailwind components;
 @tailwind utilities;
 
+/* ---------- Page baseline (single source of truth for background) ---------- */
+html,
+body,
+#root {
+  height: 100%;
+  min-height: 100%;
+}
+
+body {
+  margin: 0;
+  color: #fff;
+  /* default text color */
+  background-color: #0b0b0b;
+  /* solid fallback */
+  background-image: linear-gradient(180deg, #1a1a1a 0%, #111 100%);
+  background-repeat: no-repeat;
+  background-attachment: fixed;
+  /* keep gradient pinned while scrolling */
+  background-size: cover;
+  /* stretch across the entire viewport */
+  overflow-x: hidden;
+  /* avoid any horizontal white sliver */
+}
+
+/* Keep app container for layout only */
+#app-root {
+  @apply min-h-screen text-white;
+}
+
 /* ---------- Design tokens ---------- */
 :root {
   --accent-from: #a855f7;
@@ -24,12 +53,6 @@ resume embed, and shared components.
 
 html {
   scroll-behavior: smooth;
-}
-
-/* App background */
-#app-root {
-  @apply min-h-screen text-white;
-  background: linear-gradient(180deg, #1a1a1a, #111);
 }
 
 /* Push content below fixed header */
@@ -510,11 +533,6 @@ main {
     grid-template-columns: 1.25fr 1.55fr;
   }
 
-  .project-full__text {
-    max-width: 58ch;
-    padding-inline: clamp(1rem, 1.5vw, 1.75rem);
-  }
-
   .project-full .projects__title {
     font-size: clamp(2.25rem, 3.2vw, 3.1rem);
     line-height: 1.08;
@@ -761,14 +779,37 @@ main {
   border-radius: 1rem;
   overflow: hidden;
   box-shadow: 0 24px 60px rgba(0, 0, 0, .40);
+  width: 100%;
+  margin-inline: auto;
 }
 
+/* NEW: Widescreen wrapper for landscape demos (e.g., WatchThis) */
+/* Make widescreen demos fill the row without inner side bars */
+.pd-video--widescreen {
+  aspect-ratio: 16 / 9;
+  width: 100%;
+  /* fill wrapper */
+  max-width: 1400px;
+  /* roomier on large screens */
+  margin-inline: auto;
+  background: #000;
+}
+
+@media (min-width: 768px) {
+  .pd-video--widescreen {
+    width: 96%;
+    /* breathe a little on md+ */
+  }
+}
+
+/* Ensure the video truly fills its box (no pillarboxing) */
 .pd-video-el {
   width: 100%;
   height: 100%;
   object-fit: cover;
-  border-radius: inherit;
+  /* crop rather than letterbox */
   display: block;
+  border-radius: inherit;
   position: relative;
   z-index: 0;
 }
@@ -893,4 +934,59 @@ main {
   display: block;
   border: none;
   background: #0b0b0b;
+}
+
+/* --- Fix unintended centering --- */
+
+/* Project full sections: stop centering the columns */
+.project-full__inner {
+  justify-items: start;
+  /* was center via grid default in your block */
+  text-align: left;
+}
+
+/* The text column inside project-full */
+.project-full__text {
+  text-align: left;
+}
+
+/* Cards (skills/about/project list) — keep copy left-aligned */
+.projects__card,
+.projects__text,
+.pd-card {
+  text-align: left;
+}
+
+/* If any inner card layout was vertically centering and pulling text with it */
+.projects__card-inner {
+  align-items: start;
+  /* instead of items-center */
+}
+
+/* Safety: make generic paragraphs left by default inside sections/cards */
+.projects p,
+.pd-card p {
+  text-align: left;
+}
+
+/* Scroll reveal */
+.section-reveal {
+  opacity: 0;
+  transform: translateY(16px);
+  transition: opacity .6s ease, transform .6s ease;
+  will-change: opacity, transform;
+}
+
+.section-reveal.is-visible {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+/* Respect reduced motion */
+@media (prefers-reduced-motion: reduce) {
+  .section-reveal {
+    transition: none;
+    opacity: 1 !important;
+    transform: none !important;
+  }
 }

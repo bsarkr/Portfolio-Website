@@ -1,25 +1,21 @@
 // src/views/ProjectDetail.jsx
 // By Bilash Sarkar
 
-// Renders a project detail page with a hero, demo video, tech stack,
-// setup/usage/learnings/roadmap sections, and a custom video player.
-// Uses a special split layout for StudyBuddy based on id/slug/title.
-
 import { useEffect, useRef, useState } from "react";
 
 export default function ProjectDetail({ data }) {
     if (!data) return null;
 
-    // Detects the StudyBuddy entry to choose a portrait-split layout
+    // Is this the StudyBuddy detail (portrait demo)?
     const isStudyBuddy =
         /studybuddy/i.test(data.slug || "") ||
         /studybuddy/i.test(data.id || "") ||
         /studybuddy/i.test(data.title || "");
 
-    // Reusable section wrapper with title + glow underline
+    // Reusable left-aligned section
     const Section = ({ title, children }) => (
-        <section className="mx-auto max-w-6xl px-6 py-10">
-            <div className="pd-section-head">
+        <section className="mx-auto max-w-6xl px-6 py-10 text-left">
+            <div className="pd-section-head text-left">
                 <h2 className="pd-section-title">{title}</h2>
                 <div className="pd-section-glow" />
             </div>
@@ -27,20 +23,19 @@ export default function ProjectDetail({ data }) {
         </section>
     );
 
-    // Small pill badge for tech items
+    // Small skill/tech pill
     const Pill = ({ children }) => (
         <span className="inline-block px-3 py-1 rounded-full bg-white/10 border border-white/15 mr-2 mb-2 text-sm">
             {children}
         </span>
     );
 
-    // Custom HTML5 video player state and refs
+    // Video player state
     const videoRef = useRef(null);
     const [isPlaying, setIsPlaying] = useState(false);
     const [cur, setCur] = useState(0);
     const [dur, setDur] = useState(0);
 
-    // Wire up video events once on mount; try muted autoplay when ready
     useEffect(() => {
         const v = videoRef.current;
         if (!v) return;
@@ -70,7 +65,6 @@ export default function ProjectDetail({ data }) {
         };
     }, []);
 
-    // Toggle play/pause programmatically
     const togglePlay = () => {
         const v = videoRef.current;
         if (!v) return;
@@ -78,7 +72,6 @@ export default function ProjectDetail({ data }) {
         else v.pause();
     };
 
-    // Scrub to a new timestamp and sync state
     const seek = (e) => {
         const v = videoRef.current;
         if (!v) return;
@@ -87,7 +80,6 @@ export default function ProjectDetail({ data }) {
         setCur(t);
     };
 
-    // Format seconds → M:SS for the time display
     const fmt = (s) => {
         if (!isFinite(s)) return "0:00";
         const m = Math.floor(s / 60);
@@ -97,7 +89,7 @@ export default function ProjectDetail({ data }) {
 
     return (
         <div id="project-detail">
-            {/* Hero: title, tagline, and GitHub link */}
+            {/* HERO — only this part is centered */}
             <header className="mx-auto max-w-6xl px-6 pt-24 pb-8 text-center">
                 <h1 className="pd-hero-title">{data.title}</h1>
                 <p className="mt-4 text-lg md:text-xl text-gray-200">{data.tagline}</p>
@@ -109,7 +101,13 @@ export default function ProjectDetail({ data }) {
                         rel="noopener noreferrer"
                         className="pd-pill-btn pd-pill-btn--gh"
                     >
-                        <svg viewBox="0 0 16 16" width="16" height="16" className="-mt-0.5 mr-2 opacity-90" aria-hidden="true">
+                        <svg
+                            viewBox="0 0 16 16"
+                            width="16"
+                            height="16"
+                            className="-mt-0.5 mr-2 opacity-90"
+                            aria-hidden="true"
+                        >
                             <path
                                 fill="currentColor"
                                 d="M8 0C3.58 0 0 3.58 0 8a8 8 0 0 0 5.47 7.59c.4.07.55-.17.55-.38
@@ -126,11 +124,11 @@ export default function ProjectDetail({ data }) {
                 </div>
             </header>
 
-            {/* Media + tech split layout for StudyBuddy; default player for others */}
+            {/* BELOW THE HERO — left aligned content */}
             {isStudyBuddy ? (
-                <section className="mx-auto max-w-6xl px-6 pb-6">
+                <section className="mx-auto max-w-6xl px-6 pb-6 text-left">
                     <div className="grid md:grid-cols-2 gap-10 items-start">
-                        {/* Left: portrait video with custom controls */}
+                        {/* Portrait video with custom controls */}
                         <div className="flex justify-center md:justify-start">
                             <div className="pd-video pd-video--contain group w/full max-w-[400px] md:max-h-[90vh]">
                                 <div className="pd-frame-ring" />
@@ -145,7 +143,7 @@ export default function ProjectDetail({ data }) {
                                     preload="metadata"
                                 />
                                 <div className="pd-controls group-hover:opacity-100">
-                                    <button className="pd-ctrl-btn" onClick={togglePlay} aria-label="Play/Pause">
+                                    <button className="pd-ctrl-btn" onClick={togglePlay}>
                                         {isPlaying ? "Pause" : "Play"}
                                     </button>
                                     <input
@@ -156,24 +154,21 @@ export default function ProjectDetail({ data }) {
                                         step="0.1"
                                         value={cur}
                                         onChange={seek}
-                                        aria-label="Scrub video position"
                                     />
-                                    <div className="pd-time">
-                                        {fmt(cur)} / {fmt(dur)}
-                                    </div>
+                                    <div className="pd-time">{fmt(cur)} / {fmt(dur)}</div>
                                 </div>
                             </div>
                         </div>
 
-                        {/* Right: technologies grouped and listed as pills */}
-                        <aside className="space-y-6">
-                            <div className="pd-section-head mb-2">
+                        {/* Tech pills */}
+                        <aside className="space-y-6 text-left">
+                            <div className="pd-section-head mb-2 text-left">
                                 <h2 className="pd-section-title">Technologies Used</h2>
                                 <div className="pd-section-glow" />
                             </div>
 
                             {Object.entries(data.tech).map(([group, items]) => (
-                                <div key={group} className="pd-card">
+                                <div key={group} className="pd-card text-left">
                                     <h3 className="pd-card-title">{group}</h3>
                                     <div>{items.map((t) => <Pill key={t}>{t}</Pill>)}</div>
                                 </div>
@@ -183,8 +178,9 @@ export default function ProjectDetail({ data }) {
                 </section>
             ) : (
                 data.video && (
-                    <section className="mx-auto max-w-6xl px-6 pb-6">
-                        <div className="pd-video group">
+                    <section className="mx-auto max-w-6xl px-6 pb-6 text-left">
+                        {/* Landscape/widescreen video */}
+                        <div className="pd-video pd-video--widescreen group mx-auto">
                             <div className="pd-frame-ring" />
                             <video
                                 ref={videoRef}
@@ -197,7 +193,7 @@ export default function ProjectDetail({ data }) {
                                 preload="metadata"
                             />
                             <div className="pd-controls group-hover:opacity-100">
-                                <button className="pd-ctrl-btn" onClick={togglePlay} aria-label="Play/Pause">
+                                <button className="pd-ctrl-btn" onClick={togglePlay}>
                                     {isPlaying ? "Pause" : "Play"}
                                 </button>
                                 <input
@@ -208,23 +204,20 @@ export default function ProjectDetail({ data }) {
                                     step="0.1"
                                     value={cur}
                                     onChange={seek}
-                                    aria-label="Scrub video position"
                                 />
-                                <div className="pd-time">
-                                    {fmt(cur)} / {fmt(dur)}
-                                </div>
+                                <div className="pd-time">{fmt(cur)} / {fmt(dur)}</div>
                             </div>
                         </div>
                     </section>
                 )
             )}
 
-            {/* Tech grid for non-StudyBuddy pages */}
+            {/* Tech grid for non-StudyBuddy */}
             {!isStudyBuddy && (
                 <Section title="Technologies Used">
                     <div className="grid md:grid-cols-3 gap-6">
                         {Object.entries(data.tech).map(([group, items]) => (
-                            <div key={group} className="pd-card">
+                            <div key={group} className="pd-card text-left">
                                 <h3 className="pd-card-title">{group}</h3>
                                 <div>{items.map((t) => <Pill key={t}>{t}</Pill>)}</div>
                             </div>

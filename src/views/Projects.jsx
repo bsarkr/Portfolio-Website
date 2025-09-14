@@ -5,8 +5,10 @@
 // Each card auto-plays/pauses its preview video based on viewport visibility
 // (IntersectionObserver + Page Visibility API) for a smooth, quiet browsing experience.
 
+import { Link } from "react-router-dom";
 import { useEffect, useRef } from "react";
 import { projects } from "../models/projects";
+import useScrollReveal from "../hooks/useScrollReveal";
 
 export default function Projects() {
     // Map project id → <video> element for quick lookup in observer callbacks
@@ -15,6 +17,14 @@ export default function Projects() {
     const inViewRef = useRef(new Set());
     // Single IntersectionObserver shared across all cards
     const observerRef = useRef(null);
+
+    // Scroll-reveal for the container + each project card
+    useScrollReveal({
+        selector: ".section-reveal, article.project-full.section-reveal",
+        rootMargin: "0px 0px -12% 0px",
+        threshold: 0.18,
+        toggleOut: true, // fade out when leaving viewport
+    });
 
     useEffect(() => {
         // Observe all project cards (each has a data-project-id)
@@ -71,25 +81,30 @@ export default function Projects() {
                     p.id === "studybuddy" ? "md:mt-12 lg:mt-30 xl:mt-36" : "";
 
                 return (
-                    <article key={p.id} data-project-id={p.id} className="project-full">
+                    <article
+                        key={p.id}
+                        data-project-id={p.id}
+                        className="project-full section-reveal"
+                        style={{ transitionDelay: `${idx * 80}ms` }} // subtle stagger per card
+                    >
                         <div
                             className={`project-full__inner relative ${idx % 2 === 1 ? "is-reverse" : ""
                                 } items-start`}
                         >
                             {/* Full-card invisible anchor: clicking anywhere opens the project */}
-                            <a
-                                href={p.href}
+                            <Link
+                                to={p.href}
                                 aria-label={`Open ${p.title}`}
                                 className="absolute inset-0 z-10"
                             />
 
                             {/* Inline hint to communicate interactivity without stealing focus */}
-                            <a
-                                href={p.href}
+                            <Link
+                                to={p.href}
                                 className="absolute top-10 right-10 z-20 text-xs md:text-sm text-white/60 hover:text-white transition"
                             >
                                 Click to learn more
-                            </a>
+                            </Link>
 
                             {/* Text column with title, blurb, and (for StudyBuddy) overlaid logo */}
                             <div
@@ -120,8 +135,8 @@ export default function Projects() {
                             <div className="project-full__media" aria-hidden="true">
                                 <div
                                     className={`proj-frame ${p.orientation === "portrait"
-                                        ? "proj-frame--phone"
-                                        : "proj-frame--wide"
+                                            ? "proj-frame--phone"
+                                            : "proj-frame--wide"
                                         }`}
                                 >
                                     <video

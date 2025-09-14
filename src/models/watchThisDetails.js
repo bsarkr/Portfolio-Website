@@ -1,4 +1,4 @@
-// /src/models/projectDetails.js
+// /src/models/watchThisDetails.js
 // By Bilash Sarkar
 
 // Structured content for project case studies. Each project entry
