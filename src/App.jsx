@@ -1,7 +1,8 @@
-//app.jsx
+// /src/App.jsx
 
 import Header from "./views/header";
 import Hero from "./views/hero";
+import Projects from "./views/projects";
 
 export default function App() {
   return (
@@ -9,6 +10,7 @@ export default function App() {
       <Header />
       <main>
         <Hero />
+        <Projects />
       </main>
     </div>
   );
