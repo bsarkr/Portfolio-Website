@@ -1,10 +1,10 @@
-// src/views/Skills.jsx
+// /src/views/Skills.jsx
 // By Bilash Sarkar
-// Renders the Skills page: hero header, project-applied skills, core resume stack,
-// experience highlights, and non-technical skills.
+// Skills page with consistent header via PageHeader, scroll reveal, and sections.
 
 import React from "react";
 import useScrollReveal from "../hooks/useScrollReveal";
+import PageHeader from "../components/PageHeader";
 
 // Reusable pill badge for listing skills/keywords
 const Pill = ({ children }) => (
@@ -13,7 +13,7 @@ const Pill = ({ children }) => (
     </span>
 );
 
-// Section wrapper with title + glow underline for consistent page structure
+// Section wrapper with title + glow underline
 const Section = ({ title, children }) => (
     <section className="section-reveal mx-auto max-w-6xl px-6 py-10 text-left">
         <div className="pd-section-head text-left">
@@ -27,22 +27,22 @@ const Section = ({ title, children }) => (
 export default function Skills({ data }) {
     const { title, subtitle, resume, fromProjects, experienceHighlights, nonTechnical } = data;
 
-    // Activate IntersectionObserver-driven reveal on scroll
     useScrollReveal({
         rootMargin: "0px 0px -12% 0px",
         threshold: 0.18,
-        toggleOut: true, // fade out again when leaving viewport
+        toggleOut: true,
     });
 
     return (
         <div id="skills-page">
-            {/* Hero: page title + supporting subtitle */}
-            <header className="section-reveal mx-auto max-w-6xl px-6 pt-24 pb-6 text-center">
-                <h1 className="pd-hero-title">{title}</h1>
-                <p className="mt-4 text-lg md:text-xl text-gray-200">{subtitle}</p>
-            </header>
+            <PageHeader
+                title={title}
+                subtitle={subtitle}
+                // a slight magenta→violet shift different from the others
+                gradient="from-pink-500 via-fuchsia-500 to-violet-500"
+                className="section-reveal"
+            />
 
-            {/* Project-applied skills: shows where and how skills were used */}
             <Section title="Built in Projects">
                 <div className="grid gap-6 md:grid-cols-2">
                     {fromProjects.map((p, idx) => (
@@ -50,7 +50,7 @@ export default function Skills({ data }) {
                             key={p.name}
                             href={p.href || undefined}
                             className="block p-5 rounded-xl border border-white/10 bg-white/5 shadow-[0_18px_44px_rgba(0,0,0,.35)] hover:bg-white/10 transition text-left"
-                            style={{ transitionDelay: `${idx * 60}ms` }} // subtle stagger
+                            style={{ transitionDelay: `${idx * 60}ms` }}
                         >
                             <div className="flex items-center justify-between">
                                 <h3 className="text-xl font-semibold text-white/95">{p.name}</h3>
@@ -71,7 +71,6 @@ export default function Skills({ data }) {
                 </div>
             </Section>
 
-            {/* Resume-based core stack grouped by category */}
             <Section title="Core Technical Stack">
                 <div className="grid md:grid-cols-3 gap-6">
                     <div className="p-5 rounded-xl border border-white/10 bg-white/5 text-left">
@@ -95,7 +94,6 @@ export default function Skills({ data }) {
                 </div>
             </Section>
 
-            {/* Experience-backed highlights (optional) */}
             {!!experienceHighlights?.length && (
                 <Section title="Experience Highlights">
                     <ul className="list-disc list-inside text-gray-300 space-y-2">
@@ -106,7 +104,6 @@ export default function Skills({ data }) {
                 </Section>
             )}
 
-            {/* Soft skills / non-technical capabilities (optional) */}
             {!!nonTechnical?.length && (
                 <Section title="More (non-technical)">
                     <div className="flex flex-wrap text-left">
@@ -117,7 +114,6 @@ export default function Skills({ data }) {
                 </Section>
             )}
 
-            {/* Footer credit */}
             <footer className="section-reveal mx-auto max-w-6xl px-6 py-10 text-center text-white/60">
                 Built by Bilash Sarkar
             </footer>

@@ -9,10 +9,10 @@ import Header from "./views/header.jsx";
 
 // Pages / sections you already have
 import Hero from "./views/hero.jsx";
-import Projects from "./views/Projects.jsx";
+import Projects from "./views/projects.jsx";
 import Skills from "./views/Skills.jsx";
 import Resume from "./views/Resume.jsx";
-import About from "./views/About.jsx";            // you made this earlier
+import About from "./views/about.jsx";            // you made this earlier
 import ProjectDetail from "./views/ProjectDetail.jsx";
 
 // Data for project detail pages
@@ -38,6 +38,10 @@ function Home() {
 }
 
 export default function App() {
+  useEffect(() => {
+    document.documentElement.classList.add("js-ready");
+  }, []);
+
   return (
     <>
       <Header />

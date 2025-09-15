@@ -23,14 +23,31 @@ body {
   /* default text color */
   background-color: #0b0b0b;
   /* solid fallback */
-  background-image: linear-gradient(180deg, #1a1a1a 0%, #111 100%);
-  background-repeat: no-repeat;
-  background-attachment: fixed;
-  /* keep gradient pinned while scrolling */
-  background-size: cover;
-  /* stretch across the entire viewport */
   overflow-x: hidden;
   /* avoid any horizontal white sliver */
+}
+
+/* Pin the gradient visually without using background-attachment: fixed
+   (works reliably on iOS Safari + mobile Chrome) */
+body::before {
+  content: "";
+  position: fixed;
+  inset: 0;
+  z-index: -1;
+  pointer-events: none;
+  background: linear-gradient(180deg, #1a1a1a 0%, #101010 50%, #0d0d0d 70%, #111 100%);
+  background-repeat: no-repeat;
+  background-size: cover;
+  will-change: transform;
+  /* hint for mobile GPUs */
+  transform: translateZ(0);
+}
+
+/* iOS safety: ensure the fixed layer stays in the right compositing context */
+@supports (-webkit-touch-callout: none) {
+  body::before {
+    position: fixed;
+  }
 }
 
 /* Keep app container for layout only */
@@ -174,7 +191,7 @@ main {
 }
 
 .site-nav {
-  @apply hidden sm:flex gap-6 md:gap-8 text-sm font-medium;
+  @apply hidden md:flex gap-6 md:gap-8 text-sm font-medium;
 }
 
 .site-nav__link {
@@ -275,42 +292,73 @@ main {
   }
 }
 
-/* ===== Sections fade-up reveal ===== */
+/* ===== Scroll reveal (robust & iOS-safe) =====
+   We keep content visible until JS adds html.js-ready.
+   On iOS we avoid view-timeline; on capable browsers we enable it via html.view-timeline-ok.
+*/
+
+/* Default: visible (never blank while JS initializes) */
 .section-reveal {
-  opacity: 0;
-  transform: translateY(18px);
-  transition: opacity .6s ease, transform .6s ease;
-}
-
-.section-reveal.is-visible {
   opacity: 1;
-  transform: translateY(0);
+  transform: none;
 }
 
+/* JS-ready state: now use hidden -> visible with a class toggle */
+html.js-ready .section-reveal {
+  opacity: 0;
+  transform: translate3d(0, 16px, 0);
+  -webkit-transform: translate3d(0, 16px, 0);
+  transition: opacity .6s ease, transform .6s ease;
+  will-change: opacity, transform;
+  backface-visibility: hidden;
+}
+
+html.js-ready .section-reveal.is-visible {
+  opacity: 1;
+  transform: translate3d(0, 0, 0);
+  -webkit-transform: translate3d(0, 0, 0);
+}
+
+/* Prefer reduced motion */
+@media (prefers-reduced-motion: reduce) {
+
+  .section-reveal,
+  html.js-ready .section-reveal {
+    transition: none;
+    opacity: 1 !important;
+    transform: none !important;
+  }
+}
+
+/* Enable view-timeline only on truly safe engines (JS will set html.view-timeline-ok) */
 @supports (animation-timeline: view()) {
-  .section-reveal {
+  html.view-timeline-ok .section-reveal {
     animation: revealUp both;
     animation-timeline: view();
     animation-range: entry 20% cover 30%;
   }
+}
 
-  @keyframes revealUp {
-    from {
-      opacity: 0;
-      transform: translateY(18px);
-    }
-
-    to {
-      opacity: 1;
-      transform: translateY(0);
-    }
+@keyframes revealUp {
+  from {
+    opacity: 0;
+    transform: translate3d(0, 18px, 0);
   }
+
+  to {
+    opacity: 1;
+    transform: translate3d(0, 0, 0);
+  }
+}
+
+/* Kill animations specifically on iOS if Safari claims partial support */
+html.ios .section-reveal {
+  animation: none !important;
 }
 
 /* ===== Projects (legacy list layout kept) ===== */
 .projects {
   @apply mx-auto max-w-6xl px-6 py-24 relative;
-  will-change: opacity, transform;
 }
 
 .projects__inner {
@@ -481,8 +529,19 @@ main {
   scroll-snap-type: y mandatory;
 }
 
+@media (hover: none) and (pointer: coarse) {
+  .sectionsnap {
+    scroll-snap-type: y proximity;
+  }
+}
+
 .project-full {
+  min-height: 100vh;
+  /* fallback */
+  min-height: 100dvh;
+  /* modern dynamic viewport */
   min-height: 100svh;
+  /* small-viewport unit */
   display: flex;
   align-items: center;
   justify-content: center;
@@ -783,14 +842,10 @@ main {
   margin-inline: auto;
 }
 
-/* NEW: Widescreen wrapper for landscape demos (e.g., WatchThis) */
-/* Make widescreen demos fill the row without inner side bars */
 .pd-video--widescreen {
   aspect-ratio: 16 / 9;
   width: 100%;
-  /* fill wrapper */
   max-width: 1400px;
-  /* roomier on large screens */
   margin-inline: auto;
   background: #000;
 }
@@ -798,11 +853,9 @@ main {
 @media (min-width: 768px) {
   .pd-video--widescreen {
     width: 96%;
-    /* breathe a little on md+ */
   }
 }
 
-/* Ensure the video truly fills its box (no pillarboxing) */
 .pd-video-el {
   width: 100%;
   height: 100%;
@@ -814,7 +867,6 @@ main {
   z-index: 0;
 }
 
-/* Show full portrait videos without cropping */
 .pd-video--contain .pd-video-el {
   object-fit: contain;
   background: #000;
@@ -937,56 +989,131 @@ main {
 }
 
 /* --- Fix unintended centering --- */
-
-/* Project full sections: stop centering the columns */
 .project-full__inner {
   justify-items: start;
-  /* was center via grid default in your block */
   text-align: left;
 }
 
-/* The text column inside project-full */
 .project-full__text {
   text-align: left;
 }
 
-/* Cards (skills/about/project list) — keep copy left-aligned */
 .projects__card,
 .projects__text,
 .pd-card {
   text-align: left;
 }
 
-/* If any inner card layout was vertically centering and pulling text with it */
 .projects__card-inner {
   align-items: start;
-  /* instead of items-center */
 }
 
-/* Safety: make generic paragraphs left by default inside sections/cards */
 .projects p,
 .pd-card p {
   text-align: left;
 }
 
-/* Scroll reveal */
-.section-reveal {
-  opacity: 0;
-  transform: translateY(16px);
-  transition: opacity .6s ease, transform .6s ease;
-  will-change: opacity, transform;
+/* ----- Menu animations ----- */
+@keyframes menuDrop {
+  0% {
+    transform: translateY(-8%);
+    opacity: 0;
+  }
+
+  60% {
+    transform: translateY(2%);
+    opacity: 1;
+  }
+
+  100% {
+    transform: translateY(0);
+    opacity: 1;
+  }
 }
 
-.section-reveal.is-visible {
-  opacity: 1;
-  transform: translateY(0);
+.animate-menuDrop {
+  animation: menuDrop 0.5s cubic-bezier(.22, 1, .36, 1) both;
 }
 
-/* Respect reduced motion */
-@media (prefers-reduced-motion: reduce) {
-  .section-reveal {
-    transition: none;
-    opacity: 1 !important;
-    transform: none !important;
+@keyframes menuRise {
+  0% {
+    transform: translateY(0);
+    opacity: 1;
+  }
+
+  40% {
+    transform: translateY(2%);
+    opacity: 1;
+  }
+
+  100% {
+    transform: translateY(-8%);
+    opacity: 0;
+  }
+}
+
+.animate-menuRise {
+  animation: menuRise 0.5s cubic-bezier(.22, 1, .36, 1) both;
+}
+
+@keyframes itemRise {
+  from {
+    opacity: 0;
+    transform: translateY(8px);
+  }
+
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.animate-itemRise {
+  animation: itemRise 0.5s ease both;
+  animation-delay: var(--stagger, 0ms);
+}
+
+@keyframes menuDropTop {
+  0% {
+    transform: translateY(-100%);
+    opacity: 0;
+  }
+
+  100% {
+    transform: translateY(0%);
+    opacity: 1;
+  }
+}
+
+.animate-menuDropTop {
+  animation: menuDropTop 0.5s cubic-bezier(.22, 1, .36, 1) both;
+}
+
+@keyframes menuRiseTop {
+  0% {
+    transform: translateY(0%);
+    opacity: 1;
+  }
+
+  100% {
+    transform: translateY(-100%);
+    opacity: 0;
+  }
+}
+
+.animate-menuRiseTop {
+  animation: menuRiseTop 0.5s cubic-bezier(.22, 1, .36, 1) both;
+}
+
+/* Compact variant for the Projects section */
+.projects.projects--compact {
+  padding-top: 1rem;
+  padding-bottom: 1.25rem;
+}
+
+@media (min-width: 768px) {
+  .projects.projects--compact {
+    padding-top: 1.25rem;
+    padding-bottom: 1.5rem;
   }
 }

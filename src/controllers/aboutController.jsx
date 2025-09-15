@@ -6,7 +6,7 @@ import { createRoot } from "react-dom/client";
 
 import "../index.css";
 import Header from "../views/header.jsx";
-import About from "../views/About.jsx";
+import About from "../views/about.jsx";
 
 function AboutPage() {
     return (

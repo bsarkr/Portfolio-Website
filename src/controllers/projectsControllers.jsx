@@ -6,7 +6,7 @@ import { createRoot } from "react-dom/client";
 
 import "../index.css";           // global styles
 import Header from "../views/header.jsx";
-import Projects from "../views/Projects.jsx";
+import Projects from "../views/projects.jsx";
 
 function ProjectsPage() {
     return (

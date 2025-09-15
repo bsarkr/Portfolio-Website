@@ -1,11 +1,12 @@
 // /src/views/about.jsx
 // By Bilash Sarkar
 
-// Renders the About page with a hero section, thematic sections (why I code,
-// community, hobbies), and a closing footer.
+// Renders the About page with a consistent PageHeader, a hero section,
+// thematic sections (why I code, community, hobbies), and a closing footer.
 
 import React from "react";
 import useScrollReveal from "../hooks/useScrollReveal";
+import PageHeader from "../components/PageHeader";
 
 // Section wrapper component with title + glowing underline
 const Section = ({ title, children, className = "" }) => (
@@ -28,8 +29,16 @@ export default function About() {
 
     return (
         <div id="about-page">
+            {/* Consistent page header across pages */}
+            <PageHeader
+                title="About Me"
+                subtitle="A quick look into who I am, what drives me, and what I love outside of coding."
+                gradient="from-purple-500 via-pink-500 to-fuchsia-500"
+            />
+
             {/* Hero section with portrait on left and intro text on right */}
-            <header className="section-reveal mx-auto max-w-6xl px-6 pt-24 pb-10 text-left">
+            {/* Reduced top padding so it doesn't double with PageHeader */}
+            <header className="section-reveal mx-auto max-w-6xl px-6 pt-8 pb-10 text-left">
                 <div className="grid gap-10 md:grid-cols-2 items-center">
                     <div className="hero__right order-1 md:order-1">
                         <img

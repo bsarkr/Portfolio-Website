@@ -1,18 +1,21 @@
 // src/views/ProjectDetail.jsx
 // By Bilash Sarkar
+// Project detail page with a centered hero and left-aligned content below.
+// Supports a portrait demo layout for StudyBuddy and a widescreen default player.
+// Includes custom HTML5 video controls and tech/usage/setup sections.
 
 import { useEffect, useRef, useState } from "react";
 
 export default function ProjectDetail({ data }) {
     if (!data) return null;
 
-    // Is this the StudyBuddy detail (portrait demo)?
+    // Identify StudyBuddy entries to switch to the portrait demo layout
     const isStudyBuddy =
         /studybuddy/i.test(data.slug || "") ||
         /studybuddy/i.test(data.id || "") ||
         /studybuddy/i.test(data.title || "");
 
-    // Reusable left-aligned section
+    // Left-aligned section wrapper with title + accent underline
     const Section = ({ title, children }) => (
         <section className="mx-auto max-w-6xl px-6 py-10 text-left">
             <div className="pd-section-head text-left">
@@ -23,19 +26,20 @@ export default function ProjectDetail({ data }) {
         </section>
     );
 
-    // Small skill/tech pill
+    // Compact pill for skills/technologies
     const Pill = ({ children }) => (
         <span className="inline-block px-3 py-1 rounded-full bg-white/10 border border-white/15 mr-2 mb-2 text-sm">
             {children}
         </span>
     );
 
-    // Video player state
+    // Custom video player state/refs
     const videoRef = useRef(null);
     const [isPlaying, setIsPlaying] = useState(false);
     const [cur, setCur] = useState(0);
     const [dur, setDur] = useState(0);
 
+    // Wire up video events and attempt muted autoplay when ready
     useEffect(() => {
         const v = videoRef.current;
         if (!v) return;
@@ -65,6 +69,7 @@ export default function ProjectDetail({ data }) {
         };
     }, []);
 
+    // Toggle play/pause
     const togglePlay = () => {
         const v = videoRef.current;
         if (!v) return;
@@ -72,6 +77,7 @@ export default function ProjectDetail({ data }) {
         else v.pause();
     };
 
+    // Seek to a specific timestamp and sync UI
     const seek = (e) => {
         const v = videoRef.current;
         if (!v) return;
@@ -80,6 +86,7 @@ export default function ProjectDetail({ data }) {
         setCur(t);
     };
 
+    // Format seconds as M:SS
     const fmt = (s) => {
         if (!isFinite(s)) return "0:00";
         const m = Math.floor(s / 60);
@@ -89,7 +96,7 @@ export default function ProjectDetail({ data }) {
 
     return (
         <div id="project-detail">
-            {/* HERO — only this part is centered */}
+            {/* Hero: centered title/tagline and GitHub CTA */}
             <header className="mx-auto max-w-6xl px-6 pt-24 pb-8 text-center">
                 <h1 className="pd-hero-title">{data.title}</h1>
                 <p className="mt-4 text-lg md:text-xl text-gray-200">{data.tagline}</p>
@@ -124,11 +131,11 @@ export default function ProjectDetail({ data }) {
                 </div>
             </header>
 
-            {/* BELOW THE HERO — left aligned content */}
+            {/* Below hero: left-aligned content and media */}
             {isStudyBuddy ? (
                 <section className="mx-auto max-w-6xl px-6 pb-6 text-left">
                     <div className="grid md:grid-cols-2 gap-10 items-start">
-                        {/* Portrait video with custom controls */}
+                        {/* Portrait demo with custom controls */}
                         <div className="flex justify-center md:justify-start">
                             <div className="pd-video pd-video--contain group w/full max-w-[400px] md:max-h-[90vh]">
                                 <div className="pd-frame-ring" />
@@ -160,7 +167,7 @@ export default function ProjectDetail({ data }) {
                             </div>
                         </div>
 
-                        {/* Tech pills */}
+                        {/* Tech groups rendered as pill lists */}
                         <aside className="space-y-6 text-left">
                             <div className="pd-section-head mb-2 text-left">
                                 <h2 className="pd-section-title">Technologies Used</h2>
@@ -179,7 +186,7 @@ export default function ProjectDetail({ data }) {
             ) : (
                 data.video && (
                     <section className="mx-auto max-w-6xl px-6 pb-6 text-left">
-                        {/* Landscape/widescreen video */}
+                        {/* Widescreen demo with custom controls */}
                         <div className="pd-video pd-video--widescreen group mx-auto">
                             <div className="pd-frame-ring" />
                             <video
@@ -212,7 +219,7 @@ export default function ProjectDetail({ data }) {
                 )
             )}
 
-            {/* Tech grid for non-StudyBuddy */}
+            {/* Tech grid for non-StudyBuddy entries */}
             {!isStudyBuddy && (
                 <Section title="Technologies Used">
                     <div className="grid md:grid-cols-3 gap-6">
