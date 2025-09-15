@@ -1,41 +1,64 @@
-# Personal Portfolio – React + Vite
+# Personal Portfolio
 
-This is my **personal developer portfolio**, designed to showcase my projects, skills, and experience in a clean, modern, and visually engaging way.  
-The design is heavily inspired by **Apple’s minimalistic UI style** – smooth gradients, polished typography, and a focus on simplicity that lets the content speak for itself.  
-It’s built with **React + Vite** for blazing-fast performance, and deployed on **AWS** for scalability and reliability.
+By Bilash Sarkar  
 
-This Website is now live. Visit bilashsarkar.com to check it out!
----
+This is my personal developer portfolio, designed to showcase my projects, skills, and experience in a clean and modern way.  
+The design is inspired by Apple’s minimalistic UI style — smooth gradients, bold typography, and subtle animations that highlight content without distraction.  
 
-## Design Inspiration
-
-My goal was to create a portfolio that feels **sleek, professional, and effortless to navigate**.  
-Some key design inspirations and choices include:
-
-- **Apple.com’s aesthetic** – space-gray backgrounds, subtle gradients, and high-contrast highlights  
-- **Smooth animations** for interactive elements  
-- **Tailwind CSS** for rapid, consistent styling  
-- **Mobile-first responsive design** to ensure it looks great on any device  
+The goal of this portfolio is to present my work professionally while still reflecting my design preferences:
+- Providing a central hub for my resume, projects, and skills.
+- Keeping the UI sleek, responsive, and mobile-friendly.
+- Using smooth scrolling and transitions for a premium feel.
+- Hosting on AWS with a custom domain for scalability and reliability.
 
 ---
 
-## Features
-
-- **Vite + React** – Ultra-fast development and build process  
-- **Tailwind CSS** – Utility-first styling for a polished UI  
-- **Dark mode aesthetic** – Inspired by Apple’s space-gray look  
-- **Responsive layout** – Perfect on desktop, tablet, and mobile  
-- **AWS Deployment** – Hosting and scalability for production use  
-- Smooth scrolling & section transitions for a premium feel  
+## Technologies Used
+- React + Vite – Fast and modern frontend development.
+- Tailwind CSS – Utility-first styling with a polished, minimal aesthetic.
+- AWS S3 + CloudFront – Hosting and global distribution.
+- GitHub Actions – Automated deployment on commits.
+- Git & GitHub – Version control and repository management.
 
 ---
 
-## Tech Stack
+## Setup & Installation
 
-- **Frontend:** React, Vite, Tailwind CSS  
-- **Hosting:** AWS (S3 + CloudFront)  
-- **Version Control:** Git + GitHub  
-- **Deployment:** GitHub Actions → AWS  
+This Site is now LIVE
+Visit bilashsarkar.com to test it out and see what it can do!
+
+Otherwise, you can view the source code and play around through the following installation:
+
+1. Clone the repository:  
+   ```bash
+   git clone https://github.com/bsarkr/Portfolio-Website.git
+   ```
+2. Navigate into the project folder:  
+   ```bash
+   cd Portfolio-Website
+   ```
+3. Install dependencies:  
+   ```bash
+   npm install
+   ```
+4. Run the development server:  
+   ```bash
+   npm run dev
+   ```
 
 ---
 
+## Contributions & Learnings
+This portfolio reflects my interest in both frontend design and scalable deployment.  
+Key accomplishments and challenges include:
+- Building a responsive, mobile-first UI using React and Tailwind CSS.
+- Designing with Apple-inspired minimalism while still adding personal flair.
+- Deploying via AWS S3 and CloudFront with a custom domain: [bilashsarkar.com](https://bilashsarkar.com).
+- Automating deployments through GitHub Actions for a seamless CI/CD pipeline.
+- Refining section layouts (About, Resume, Skills, Projects) for clarity and consistency.
+- Planning further improvements to responsiveness and animations for smaller devices.
+
+---
+
+This project taught me the importance of design consistency, scalability, and automation.  
+It’s not just a website — it’s a professional representation of who I am as a developer, with the same attention to detail I bring into every project.  
