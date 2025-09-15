@@ -24,8 +24,8 @@ The goal of this portfolio is to present my work professionally while still refl
 
 ## Setup & Installation
 
-This Site is now LIVE
-Visit bilashsarkar.com to test it out and see what it can do!
+This Site is now LIVE.
+Visit [bilashsarkar.com](https://bilashsarkar.com) to test it out and see what it can do!
 
 Otherwise, you can view the source code and play around through the following installation:
 
