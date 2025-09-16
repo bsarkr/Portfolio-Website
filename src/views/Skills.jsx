@@ -2,7 +2,7 @@
 // By Bilash Sarkar
 // Skills page with consistent header via PageHeader, scroll reveal, and sections.
 
-import React from "react";
+import React, { useEffect } from "react";
 import useScrollReveal from "../hooks/useScrollReveal";
 import PageHeader from "../components/PageHeader";
 
@@ -27,14 +27,23 @@ const Section = ({ title, children }) => (
 export default function Skills({ data }) {
     const { title, subtitle, resume, fromProjects, experienceHighlights, nonTechnical } = data;
 
+    // Scroll-based reveals for sections/cards
     useScrollReveal({
         rootMargin: "0px 0px -12% 0px",
         threshold: 0.18,
         toggleOut: true,
     });
 
+    // Page-level fade-in on mount (single unified fade for the whole page)
+    useEffect(() => {
+        const root = document.getElementById("skills-page");
+        if (!root) return;
+        const raf = requestAnimationFrame(() => root.classList.add("is-loaded"));
+        return () => cancelAnimationFrame(raf);
+    }, []);
+
     return (
-        <div id="skills-page">
+        <div id="skills-page" className="page-enter">
             <PageHeader
                 title={title}
                 subtitle={subtitle}

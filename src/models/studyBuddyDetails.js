@@ -12,6 +12,7 @@ export const studyBuddyDetail = {
     video: "/videos/studybuddy.mp4",   // Path to demo video
     logo: "/StudyBuddyLogo.png",       // Path to logo asset in /public
     layout: "portraitSplit",           // Layout type used by the project page
+    poster: "/screenshots/studyBuddy.jpg",
 
     // Technologies grouped by category: UI, backend, collaboration
     tech: {

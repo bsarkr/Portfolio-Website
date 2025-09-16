@@ -1,21 +1,53 @@
 // src/views/ProjectDetail.jsx
 // By Bilash Sarkar
-// Project detail page with a centered hero and left-aligned content below.
-// Supports a portrait demo layout for StudyBuddy and a widescreen default player.
-// Includes custom HTML5 video controls and tech/usage/setup sections.
+// Project detail page with centered hero (hidden on mobile), left-aligned sections,
+// and a portrait/widescreen demo player. Integrates MobileShowcase on mobile,
+// custom HTML5 video controls, and reveal-on-scroll sections.
 
 import { useEffect, useRef, useState } from "react";
+import { useParams, useLocation } from "react-router-dom";
+import MobileShowcase from "../components/MobileShowcase";
+import useScrollReveal from "../hooks/useScrollReveal";
+
+// Local registries let deep links resolve data without a parent passing props
+import { projectDetails } from "../models/watchThisDetails.js";
+import { studyBuddyDetail } from "../models/studyBuddyDetails.js";
 
 export default function ProjectDetail({ data }) {
-    if (!data) return null;
+    // Resolve project data by slug for hard refreshes on deep routes
+    const params = useParams?.() || {};
+    const location = useLocation?.();
+    const slugFromParams = params?.slug;
+    const slugFromPath =
+        !slugFromParams && location
+            ? location.pathname.split("/").filter(Boolean).pop()
+            : null;
+    const slug = slugFromParams || slugFromPath || null;
 
-    // Identify StudyBuddy entries to switch to the portrait demo layout
+    // Map of known project slugs → details
+    const registry = {
+        ...(projectDetails || {}),
+        studybuddy: studyBuddyDetail,
+    };
+
+    const resolvedData = data || (slug ? registry[slug] : null);
+    if (!resolvedData) return null;
+
+    // Switch to portrait layout for StudyBuddy
     const isStudyBuddy =
-        /studybuddy/i.test(data.slug || "") ||
-        /studybuddy/i.test(data.id || "") ||
-        /studybuddy/i.test(data.title || "");
+        /studybuddy/i.test(resolvedData.slug || "") ||
+        /studybuddy/i.test(resolvedData.id || "") ||
+        /studybuddy/i.test(resolvedData.title || "");
 
-    // Left-aligned section wrapper with title + accent underline
+    // Enable section reveal animations (with iOS-safe rootMargin)
+    useScrollReveal({
+        selector: ".section-reveal",
+        rootMargin: "0px 0px -12% 0px",
+        threshold: 0.18,
+        toggleOut: true,
+    });
+
+    // Left-aligned section with accent underline
     const Section = ({ title, children }) => (
         <section className="mx-auto max-w-6xl px-6 py-10 text-left">
             <div className="pd-section-head text-left">
@@ -26,20 +58,20 @@ export default function ProjectDetail({ data }) {
         </section>
     );
 
-    // Compact pill for skills/technologies
+    // Small skill/tech pill
     const Pill = ({ children }) => (
         <span className="inline-block px-3 py-1 rounded-full bg-white/10 border border-white/15 mr-2 mb-2 text-sm">
             {children}
         </span>
     );
 
-    // Custom video player state/refs
+    // Custom video player state
     const videoRef = useRef(null);
     const [isPlaying, setIsPlaying] = useState(false);
     const [cur, setCur] = useState(0);
     const [dur, setDur] = useState(0);
 
-    // Wire up video events and attempt muted autoplay when ready
+    // Attach media event listeners + attempt muted autoplay when ready
     useEffect(() => {
         const v = videoRef.current;
         if (!v) return;
@@ -77,7 +109,7 @@ export default function ProjectDetail({ data }) {
         else v.pause();
     };
 
-    // Seek to a specific timestamp and sync UI
+    // Scrub to a timestamp (range input)
     const seek = (e) => {
         const v = videoRef.current;
         if (!v) return;
@@ -86,7 +118,7 @@ export default function ProjectDetail({ data }) {
         setCur(t);
     };
 
-    // Format seconds as M:SS
+    // Format seconds → M:SS
     const fmt = (s) => {
         if (!isFinite(s)) return "0:00";
         const m = Math.floor(s / 60);
@@ -96,14 +128,14 @@ export default function ProjectDetail({ data }) {
 
     return (
         <div id="project-detail">
-            {/* Hero: centered title/tagline and GitHub CTA */}
-            <header className="mx-auto max-w-6xl px-6 pt-24 pb-8 text-center">
-                <h1 className="pd-hero-title">{data.title}</h1>
-                <p className="mt-4 text-lg md:text-xl text-gray-200">{data.tagline}</p>
+            {/* Desktop hero: mobile hides this to avoid duplicating MobileShowcase */}
+            <header className="hidden md:block mx-auto max-w-6xl px-6 pt-24 pb-8 text-center">
+                <h1 className="pd-hero-title">{resolvedData.title}</h1>
+                <p className="mt-4 text-lg md:text-xl text-gray-200">{resolvedData.tagline}</p>
 
                 <div className="mt-6 flex gap-3 justify-center">
                     <a
-                        href={data.githubUrl || "https://github.com/bsarkr"}
+                        href={resolvedData.githubUrl || "https://github.com/bsarkr"}
                         target="_blank"
                         rel="noopener noreferrer"
                         className="pd-pill-btn pd-pill-btn--gh"
@@ -118,12 +150,12 @@ export default function ProjectDetail({ data }) {
                             <path
                                 fill="currentColor"
                                 d="M8 0C3.58 0 0 3.58 0 8a8 8 0 0 0 5.47 7.59c.4.07.55-.17.55-.38
-                0-.19-.01-.82-.01-1.49-2.01.37-2.53-.49-2.69-.94-.09-.23-.48-.94-.82-1.13-.28-.15-.68-.52-.01-.53.63-.01
-                1.08.58 1.23.82.72 1.21 1.87.87 2.33.66.07-.52.28-.87.51-1.07-1.78-.2-3.64-.89-3.64-3.95
-                0-.87.31-1.59.82-2.15-.08-.2-.36-1.02.08-2.12 0 0 .67-.21 2.2.82a7.62 7.62 0 0 1 2-.27c.68 0
-                1.36.09 2 .27 1.53-1.04 2.2-.82 2.2-.82.44 1.1.16 1.92.08 2.12.51.56.82 1.27.82 2.15 0 3.07-1.87
-                3.75-3.65 3.95.29.25.54.73.54 1.48 0 1.07-.01 1.93-.01 2.2 0 .21.15.46.55.38A8.01 8.01 0 0 0 16
-                8c0-4.42-3.58-8-8-8Z"
+                   0-.19-.01-.82-.01-1.49-2.01.37-2.53-.49-2.69-.94-.09-.23-.48-.94-.82-1.13-.28-.15-.68-.52-.01-.53.63-.01
+                   1.08.58 1.23.82.72 1.21 1.87.87 2.33.66.07-.52.28-.87.51-1.07-1.78-.2-3.64-.89-3.64-3.95
+                   0-.87.31-1.59.82-2.15-.08-.2-.36-1.02.08-2.12 0 0 .67-.21 2.2.82a7.62 7.62 0 0 1 2-.27c.68 0
+                   1.36.09 2 .27 1.53-1.04 2.2-.82 2.2-.82.44 1.1.16 1.92.08 2.12.51.56.82 1.27.82 2.15 0 3.07-1.87
+                   3.75-3.65 3.95.29.25.54.73.54 1.48 0 1.07-.01 1.93-.01 2.2 0 .21.15.46.55.38A8.01 8.01 0 0 0 16
+                   8c0-4.42-3.58-8-8-8Z"
                             />
                         </svg>
                         GitHub
@@ -131,9 +163,24 @@ export default function ProjectDetail({ data }) {
                 </div>
             </header>
 
-            {/* Below hero: left-aligned content and media */}
+            {/* Mobile-only showcase: single centered block with poster/video */}
+            <div className="md:hidden section-reveal">
+                <MobileShowcase
+                    title={resolvedData.title}
+                    tagline={resolvedData.tagline}
+                    poster={resolvedData.poster}
+                    video={resolvedData.video}
+                    ratio={isStudyBuddy ? "9/19.5" : "16/9"}
+                    tech={(resolvedData.tech && Object.values(resolvedData.tech).flat()) || []}
+                    ctaHref={resolvedData.githubUrl}
+                    ctaLabel="GitHub"
+                    align="center"
+                />
+            </div>
+
+            {/* Desktop/tablet media sections */}
             {isStudyBuddy ? (
-                <section className="mx-auto max-w-6xl px-6 pb-6 text-left">
+                <section className="hidden md:block mx-auto max-w-6xl px-6 pb-6 text-left">
                     <div className="grid md:grid-cols-2 gap-10 items-start">
                         {/* Portrait demo with custom controls */}
                         <div className="flex justify-center md:justify-start">
@@ -142,7 +189,7 @@ export default function ProjectDetail({ data }) {
                                 <video
                                     ref={videoRef}
                                     className="pd-video-el"
-                                    src={data.video}
+                                    src={resolvedData.video}
                                     muted
                                     loop
                                     autoPlay
@@ -162,19 +209,21 @@ export default function ProjectDetail({ data }) {
                                         value={cur}
                                         onChange={seek}
                                     />
-                                    <div className="pd-time">{fmt(cur)} / {fmt(dur)}</div>
+                                    <div className="pd-time">
+                                        {fmt(cur)} / {fmt(dur)}
+                                    </div>
                                 </div>
                             </div>
                         </div>
 
-                        {/* Tech groups rendered as pill lists */}
+                        {/* Tech groups */}
                         <aside className="space-y-6 text-left">
                             <div className="pd-section-head mb-2 text-left">
                                 <h2 className="pd-section-title">Technologies Used</h2>
                                 <div className="pd-section-glow" />
                             </div>
 
-                            {Object.entries(data.tech).map(([group, items]) => (
+                            {Object.entries(resolvedData.tech).map(([group, items]) => (
                                 <div key={group} className="pd-card text-left">
                                     <h3 className="pd-card-title">{group}</h3>
                                     <div>{items.map((t) => <Pill key={t}>{t}</Pill>)}</div>
@@ -184,15 +233,15 @@ export default function ProjectDetail({ data }) {
                     </div>
                 </section>
             ) : (
-                data.video && (
-                    <section className="mx-auto max-w-6xl px-6 pb-6 text-left">
+                resolvedData.video && (
+                    <section className="hidden md:block mx-auto max-w-6xl px-6 pb-6 text-left">
                         {/* Widescreen demo with custom controls */}
                         <div className="pd-video pd-video--widescreen group mx-auto">
                             <div className="pd-frame-ring" />
                             <video
                                 ref={videoRef}
                                 className="pd-video-el"
-                                src={data.video}
+                                src={resolvedData.video}
                                 muted
                                 loop
                                 autoPlay
@@ -212,18 +261,20 @@ export default function ProjectDetail({ data }) {
                                     value={cur}
                                     onChange={seek}
                                 />
-                                <div className="pd-time">{fmt(cur)} / {fmt(dur)}</div>
+                                <div className="pd-time">
+                                    {fmt(cur)} / {fmt(dur)}
+                                </div>
                             </div>
                         </div>
                     </section>
                 )
             )}
 
-            {/* Tech grid for non-StudyBuddy entries */}
+            {/* Non-StudyBuddy: tech grid below the demo */}
             {!isStudyBuddy && (
                 <Section title="Technologies Used">
                     <div className="grid md:grid-cols-3 gap-6">
-                        {Object.entries(data.tech).map(([group, items]) => (
+                        {Object.entries(resolvedData.tech).map(([group, items]) => (
                             <div key={group} className="pd-card text-left">
                                 <h3 className="pd-card-title">{group}</h3>
                                 <div>{items.map((t) => <Pill key={t}>{t}</Pill>)}</div>
@@ -235,25 +286,25 @@ export default function ProjectDetail({ data }) {
 
             <Section title="Setup & Installation">
                 <ol className="list-decimal list-inside space-y-2 text-gray-200">
-                    {data.setup.map((step, i) => <li key={i}>{step}</li>)}
+                    {resolvedData.setup.map((step, i) => <li key={i}>{step}</li>)}
                 </ol>
             </Section>
 
             <Section title="How to Use">
                 <ul className="list-disc list-inside space-y-2 text-gray-200">
-                    {data.usage.map((u, i) => <li key={i}>{u}</li>)}
+                    {resolvedData.usage.map((u, i) => <li key={i}>{u}</li>)}
                 </ul>
             </Section>
 
             <Section title="Key Learnings & Challenges">
                 <ul className="list-disc list-inside space-y-2 text-gray-200">
-                    {data.learnings.map((l, i) => <li key={i}>{l}</li>)}
+                    {resolvedData.learnings.map((l, i) => <li key={i}>{l}</li>)}
                 </ul>
             </Section>
 
             <Section title="Roadmap & Future Features">
                 <ul className="list-disc list-inside space-y-2 text-gray-200">
-                    {data.roadmap.map((r, i) => <li key={i}>{r}</li>)}
+                    {resolvedData.roadmap.map((r, i) => <li key={i}>{r}</li>)}
                 </ul>
             </Section>
 

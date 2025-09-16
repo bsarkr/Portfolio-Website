@@ -1,16 +1,15 @@
 // /src/views/about.jsx
 // By Bilash Sarkar
 
-// Renders the About page with a consistent PageHeader, a hero section,
-// thematic sections (why I code, community, hobbies), and a closing footer.
-
 import React from "react";
 import useScrollReveal from "../hooks/useScrollReveal";
 import PageHeader from "../components/PageHeader";
 
-// Section wrapper component with title + glowing underline
-const Section = ({ title, children, className = "" }) => (
-    <section className={`section-reveal mx-auto max-w-6xl px-6 py-12 text-left ${className}`}>
+// Shared section wrapper (mobile width tightened + centered)
+const Section = ({ title, children, className = "", reveal = true }) => (
+    <section
+        className={`${reveal ? "section-reveal" : ""} mx-auto w-full max-w-[720px] md:max-w-6xl px-5 md:px-6 py-12 text-left ${className}`}
+    >
         <div className="relative pb-3 mb-6 text-left">
             <h2 className="pd-section-title">{title}</h2>
             <div className="pd-section-glow" />
@@ -20,41 +19,41 @@ const Section = ({ title, children, className = "" }) => (
 );
 
 export default function About() {
-    // Activate IntersectionObserver-driven reveal on scroll
     useScrollReveal({
         rootMargin: "0px 0px -12% 0px",
         threshold: 0.18,
-        toggleOut: true, // remove .is-visible when scrolled away for fade-out effect
+        toggleOut: true,
     });
 
     return (
-        <div id="about-page">
-            {/* Consistent page header across pages */}
+        <div id="about-page" className="page-enter">
+            {/* Page header (kept as-is) */}
             <PageHeader
                 title="About Me"
-                subtitle="A quick look into who I am, what drives me, and what I love outside of coding."
                 gradient="from-purple-500 via-pink-500 to-fuchsia-500"
             />
 
-            {/* Hero section with portrait on left and intro text on right */}
-            {/* Reduced top padding so it doesn't double with PageHeader */}
-            <header className="section-reveal mx-auto max-w-6xl px-6 pt-8 pb-10 text-left">
-                <div className="grid gap-10 md:grid-cols-2 items-center">
-                    <div className="hero__right order-1 md:order-1">
+            {/* Hero: mobile container tightened & centered */}
+            <header className="mx-auto w-full max-w-[720px] md:max-w-6xl px-5 md:px-6 pt-8 pb-10 text-left">
+                <div className="grid gap-8 md:gap-12 md:grid-cols-2 items-center">
+                    {/* Portrait */}
+                    <div className="hero__right order-1 md:order-1 flex justify-center">
                         <img
-                            className="hero__photo"
+                            className="hero__photo max-w-[320px] md:max-w-[380px] lg:max-w-[420px] mx-auto"
                             src="/me.jpg"
                             alt="Bilash Sarkar portrait"
                         />
                     </div>
-                    <div className="hero__left order-2 md:order-2">
+
+                    {/* Text */}
+                    <div className="hero__left order-2 md:order-2 max-w-[36rem] mx-auto md:mx-0">
                         <div className="hero__pretitle">Hey, I’m</div>
                         <h1 className="hero__title">Bilash Sarkar</h1>
                         <h2 className="hero__subtitle">
                             <span className="highlight-role">Software Developer</span> and Student at
                             Fordham University
                         </h2>
-                        <p className="hero__paragraph">
+                        <p className="hero__paragraph mt-6">
                             As an undergraduate Computer Science student at Fordham University I’ve discovered
                             my creativity through coding. It lets me bring ideas to life with confidence and joy.
                             I love the cycle of building, learning, and improving. Collaborating with a team makes
@@ -64,7 +63,7 @@ export default function About() {
                 </div>
             </header>
 
-            {/* Section: personal motivation for coding */}
+            {/* Why I Love Building Software */}
             <Section title="Why I Love Building Software">
                 <div className="grid gap-8 md:grid-cols-2">
                     <div className="p-6 rounded-2xl border border-white/10 bg-white/5 shadow-[0_18px_44px_rgba(0,0,0,.35)] text-left">
@@ -98,7 +97,7 @@ export default function About() {
                 </div>
             </Section>
 
-            {/* Section: community experiences and growth mindset */}
+            {/* Community and Growth */}
             <Section title="Community and Growth">
                 <div className="grid gap-8 md:grid-cols-2">
                     <div className="p-6 rounded-2xl border border-white/10 bg-white/5 shadow-[0_18px_44px_rgba(0,0,0,.35)] text-left">
@@ -120,7 +119,7 @@ export default function About() {
                 </div>
             </Section>
 
-            {/* Section: hobbies and interests beyond software */}
+            {/* Beyond the Screen */}
             <Section title="Beyond the Screen">
                 <div className="grid gap-10 md:grid-cols-2 items-start">
                     <div className="order-2 md:order-1">
@@ -136,7 +135,7 @@ export default function About() {
                     </div>
                     <div className="order-1 md:order-2 hero__right">
                         <img
-                            className="hero__photo"
+                            className="hero__photo mx-auto"
                             src="/guitar.jpg"
                             alt="Bilash’s guitar"
                         />
@@ -146,7 +145,7 @@ export default function About() {
                 <div className="grid gap-10 md:grid-cols-2 items-start mt-10">
                     <div className="hero__right">
                         <img
-                            className="hero__photo"
+                            className="hero__photo mx-auto"
                             src="/lifting.jpg"
                             alt="Weight training"
                         />
@@ -165,8 +164,8 @@ export default function About() {
                 </div>
             </Section>
 
-            {/* Closing footer note */}
-            <footer className="section-reveal mx-auto max-w-6xl px-6 py-10 text-center text-white/60">
+            {/* Footer */}
+            <footer className="section-reveal mx-auto w-full max-w-[720px] md:max-w-6xl px-5 md:px-6 py-10 text-center text-white/60">
                 Thanks for reading — I’m excited to build with you!
             </footer>
         </div>

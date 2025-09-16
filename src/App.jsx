@@ -7,18 +7,19 @@ import { useEffect } from "react";
 // Global shell
 import Header from "./views/header.jsx";
 
-// Pages / sections you already have
+// Pages
 import Hero from "./views/hero.jsx";
 import Projects from "./views/projects.jsx";
 import Skills from "./views/Skills.jsx";
 import Resume from "./views/Resume.jsx";
-import About from "./views/about.jsx";            // you made this earlier
+import About from "./views/about.jsx";
 import ProjectDetail from "./views/ProjectDetail.jsx";
+<Route path="/projects/:slug" element={<ProjectDetail />} />
 
 // Data for project detail pages
 import { projectDetails } from "./models/watchThisDetails.js";
 import { studyBuddyDetail } from "./models/studyBuddyDetails.js";
-import { skillsData } from "./models/skillsData.js"; // the data object you used before
+import { skillsData } from "./models/skillsData.js";
 
 // Scroll to top on route change
 function ScrollToTop() {

@@ -9,7 +9,7 @@ resume embed, and shared components.
 @tailwind components;
 @tailwind utilities;
 
-/* ---------- Page baseline (single source of truth for background) ---------- */
+/* ---------- Page baseline ---------- */
 html,
 body,
 #root {
@@ -27,23 +27,49 @@ body {
   /* avoid any horizontal white sliver */
 }
 
-/* Pin the gradient visually without using background-attachment: fixed
-   (works reliably on iOS Safari + mobile Chrome) */
+/* Pinned gradient layer (fills under iOS URL bar too) */
 body::before {
   content: "";
   position: fixed;
   inset: 0;
-  z-index: -1;
+  z-index: -2;
   pointer-events: none;
   background: linear-gradient(180deg, #1a1a1a 0%, #101010 50%, #0d0d0d 70%, #111 100%);
   background-repeat: no-repeat;
   background-size: cover;
   will-change: transform;
-  /* hint for mobile GPUs */
   transform: translateZ(0);
+  width: 100%;
+  height: 100dvh;
+  /* dynamic viewport */
 }
 
-/* iOS safety: ensure the fixed layer stays in the right compositing context */
+/* Paint the iOS bottom safe area so Safari doesn't add a gray strip */
+@supports (bottom: env(safe-area-inset-bottom)) {
+  body::after {
+    content: "";
+    position: fixed;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    height: env(safe-area-inset-bottom);
+    background: #0b0b0b;
+    /* match body background */
+    pointer-events: none;
+    z-index: -1;
+    /* above ::before, below content */
+  }
+}
+
+@supports (height: 100svh) {
+  body::before {
+    height: 100svh;
+  }
+
+  /* iOS small viewport unit */
+}
+
+/* iOS safety: pinned into its own layer */
 @supports (-webkit-touch-callout: none) {
   body::before {
     position: fixed;
@@ -77,7 +103,7 @@ main {
   padding-top: calc(var(--header-h) + 12px);
 }
 
-/* ===== Hero ===== */
+/* ================= Hero ================= */
 .hero {
   @apply mx-auto max-w-6xl px-6 pt-16 md:pt-24 pb-16 md:pb-24 relative;
 }
@@ -124,13 +150,20 @@ main {
 
 .hero__photo {
   @apply object-cover rounded-2xl shadow-lg;
-  width: 26rem;
+  width: 100%;
+  max-width: 26rem;
   height: auto;
   padding: 8px;
   background: conic-gradient(from 0deg, var(--accent-from), var(--accent-mid), var(--accent-to), var(--accent-from));
   border-radius: 1rem;
   transition: transform .35s ease, box-shadow .35s ease, filter .35s ease;
   filter: saturate(1.03);
+}
+
+@media (max-width: 420px) {
+  .hero__photo {
+    max-width: 22rem;
+  }
 }
 
 .hero__photo:hover {
@@ -152,6 +185,15 @@ main {
   animation: floatGlow 9s ease-in-out infinite alternate;
 }
 
+@media (max-width: 767px) {
+  .hero__right::before {
+    left: 50%;
+    transform: translateX(-50%);
+    width: 70%;
+    background: radial-gradient(ellipse at center, color-mix(in oklab, var(--accent-mid) 50%, transparent) 0%, transparent 80%);
+  }
+}
+
 @keyframes floatGlow {
   0% {
     transform: translate(4px, 0) scale(1.02);
@@ -164,7 +206,7 @@ main {
   }
 }
 
-/* ===== Header (glass) ===== */
+/* ================= Header (glass) ================= */
 .site-header {
   @apply z-50 backdrop-blur-xl;
   position: fixed;
@@ -292,71 +334,82 @@ main {
   }
 }
 
-/* ===== Scroll reveal (robust & iOS-safe) =====
-   We keep content visible until JS adds html.js-ready.
-   On iOS we avoid view-timeline; on capable browsers we enable it via html.view-timeline-ok.
-*/
-
-/* Default: visible (never blank while JS initializes) */
+/* ================= Bidirectional Scroll Reveal ================= */
 .section-reveal {
   opacity: 1;
   transform: none;
 }
 
-/* JS-ready state: now use hidden -> visible with a class toggle */
 html.js-ready .section-reveal {
   opacity: 0;
-  transform: translate3d(0, 16px, 0);
-  -webkit-transform: translate3d(0, 16px, 0);
-  transition: opacity .6s ease, transform .6s ease;
+  transform: translate3d(0, 24px, 0);
+  transition: opacity .9s cubic-bezier(.22, 1, .36, 1), transform .9s cubic-bezier(.22, 1, .36, 1);
   will-change: opacity, transform;
   backface-visibility: hidden;
+  transition-delay: var(--reveal-delay, 0ms);
 }
 
 html.js-ready .section-reveal.is-visible {
   opacity: 1;
   transform: translate3d(0, 0, 0);
-  -webkit-transform: translate3d(0, 0, 0);
 }
 
-/* Prefer reduced motion */
+html.js-ready .section-reveal.is-leaving {
+  opacity: 0;
+  transform: translate3d(0, 16px, 0);
+}
+
 @media (prefers-reduced-motion: reduce) {
 
   .section-reveal,
-  html.js-ready .section-reveal {
-    transition: none;
+  html.js-ready .section-reveal,
+  html.js-ready .section-reveal.is-visible,
+  html.js-ready .section-reveal.is-leaving {
+    transition: none !important;
     opacity: 1 !important;
     transform: none !important;
   }
 }
 
-/* Enable view-timeline only on truly safe engines (JS will set html.view-timeline-ok) */
 @supports (animation-timeline: view()) {
   html.view-timeline-ok .section-reveal {
-    animation: revealUp both;
+    animation: reveal-bidir both ease-out;
     animation-timeline: view();
-    animation-range: entry 20% cover 30%;
+    animation-range: entry 15% exit 15%;
+    transition: none;
+  }
+
+  @keyframes reveal-bidir {
+    0% {
+      opacity: 0;
+      transform: translate3d(0, 24px, 0);
+    }
+
+    50% {
+      opacity: 1;
+      transform: translate3d(0, 0, 0);
+    }
+
+    100% {
+      opacity: 0;
+      transform: translate3d(0, 16px, 0);
+    }
   }
 }
 
-@keyframes revealUp {
-  from {
-    opacity: 0;
-    transform: translate3d(0, 18px, 0);
-  }
-
-  to {
-    opacity: 1;
-    transform: translate3d(0, 0, 0);
-  }
-}
-
-/* Kill animations specifically on iOS if Safari claims partial support */
+/* Disable timeline animations on iOS (JS sets .ios) */
 html.ios .section-reveal {
   animation: none !important;
 }
 
-/* ===== Projects (legacy list layout kept) ===== */
+/* Direction-aware fade on up-scroll (JS sets data-out + --out) */
+html.js-ready .section-reveal[data-out="1"] {
+  opacity: var(--out, 1);
+  transform: translate3d(0, calc(28px * (1 - var(--out, 1))), 0);
+  transition: none;
+}
+
+/* ================= Projects (legacy list layout) ================= */
 .projects {
   @apply mx-auto max-w-6xl px-6 py-24 relative;
 }
@@ -420,10 +473,10 @@ html.ios .section-reveal {
   inset: 0;
   width: 100%;
   height: auto;
+  display: block;
   opacity: 0;
   transform: scale(1.02);
   transition: opacity .45s ease, transform .45s ease, filter .45s ease;
-  display: block;
 }
 
 .projects__image.is-visible {
@@ -450,7 +503,7 @@ html.ios .section-reveal {
   transform: scale(1);
 }
 
-/* ===== Project cards with video demos ===== */
+/* Cards with video demos */
 .projects__card-inner {
   @apply grid gap-6 md:grid-cols-2 items-center;
 }
@@ -537,11 +590,8 @@ html.ios .section-reveal {
 
 .project-full {
   min-height: 100vh;
-  /* fallback */
   min-height: 100dvh;
-  /* modern dynamic viewport */
   min-height: 100svh;
-  /* small-viewport unit */
   display: flex;
   align-items: center;
   justify-content: center;
@@ -745,7 +795,7 @@ html.ios .section-reveal {
   @apply bg-gradient-to-r from-pink-500 to-purple-500 bg-clip-text text-transparent;
 }
 
-/* ===== Project Detail accents ===== */
+/* ================= Project Detail accents ================= */
 .pd-hero-title {
   font-weight: 800;
   font-size: clamp(2.25rem, 4vw, 4rem);
@@ -860,7 +910,6 @@ html.ios .section-reveal {
   width: 100%;
   height: 100%;
   object-fit: cover;
-  /* crop rather than letterbox */
   display: block;
   border-radius: inherit;
   position: relative;
@@ -940,7 +989,7 @@ html.ios .section-reveal {
   color: #e5e7eb;
 }
 
-/* ===== Resume embed ===== */
+/* ================= Resume embed ================= */
 .resume-frame {
   position: relative;
   border-radius: 1rem;
@@ -1116,4 +1165,48 @@ html.ios .section-reveal {
     padding-top: 1.25rem;
     padding-bottom: 1.5rem;
   }
+}
+
+/* --- Consistent page load fade (used on every page wrapper) --- */
+.page-enter {
+  opacity: 0;
+  transform: translate3d(0, 6px, 0);
+  animation: pageFadeIn .8s cubic-bezier(.22, 1, .36, 1) .02s both;
+  will-change: opacity, transform;
+  backface-visibility: hidden;
+}
+
+@keyframes pageFadeIn {
+  from {
+    opacity: 0;
+    transform: translate3d(0, 6px, 0);
+  }
+
+  to {
+    opacity: 1;
+    transform: translate3d(0, 0, 0);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .page-enter {
+    animation: none !important;
+    opacity: 1 !important;
+    transform: none !important;
+  }
+}
+
+/* Helpers */
+.learnMoreClass {
+  text-decoration: none;
+}
+
+/* Sky variant (used by /projects overview on specific titles) */
+.projects__title--sky {
+  font-weight: 700;
+  background-image: linear-gradient(90deg, #06b6d4, #22d3ee);
+  /* cyan -> sky */
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
 }

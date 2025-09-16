@@ -14,7 +14,7 @@ export default function Resume() {
 
     return (
         // No extra top/bottom padding here; PageHeader controls the vertical rhythm
-        <section className="min-h-[calc(100vh-80px)] px-6">
+        <section className="min-h-[calc(100vh-80px)] px-6 page-enter">
             <PageHeader
                 title="Resume"
                 subtitle="Click the preview or use the buttons below for the latest PDF copy."
@@ -43,6 +43,23 @@ export default function Resume() {
                 {/* Actions */}
                 <div className="text-center mt-6 flex flex-col sm:flex-row gap-4 justify-center">
                     <a
+                        href={PDF_PATH}
+                        download="Bilash_Sarkar_Resume.pdf"
+                        className="inline-flex items-center gap-2 px-4 py-2 rounded-xl border border-white/15 bg-gradient-to-r from-pink-500 to-purple-500 hover:from-pink-600 hover:to-purple-600 transition"
+                    >
+                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" aria-hidden="true">
+                            <path
+                                d="M12 4v12m0 0l-4-4m4 4l4-4M4 20h16"
+                                stroke="currentColor"
+                                strokeWidth="2"
+                                strokeLinecap="round"
+                                strokeLinejoin="round"
+                            />
+                        </svg>
+                        Download Resume
+                    </a>
+
+                    <a
                         href={DRIVE_VIEW}
                         target="_blank"
                         rel="noopener noreferrer"
@@ -60,22 +77,6 @@ export default function Resume() {
                         Open on Drive
                     </a>
 
-                    <a
-                        href={PDF_PATH}
-                        download="Bilash_Sarkar_Resume.pdf"
-                        className="inline-flex items-center gap-2 px-4 py-2 rounded-xl border border-white/15 bg-gradient-to-r from-pink-500 to-purple-500 hover:from-pink-600 hover:to-purple-600 transition"
-                    >
-                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" aria-hidden="true">
-                            <path
-                                d="M12 4v12m0 0l-4-4m4 4l4-4M4 20h16"
-                                stroke="currentColor"
-                                strokeWidth="2"
-                                strokeLinecap="round"
-                                strokeLinejoin="round"
-                            />
-                        </svg>
-                        Download Resume
-                    </a>
                 </div>
             </div>
         </section>

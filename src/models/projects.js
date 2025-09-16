@@ -9,6 +9,7 @@ export const projects = [
         href: "/projects/watch-this/",
         video: "/videos/watchThis.mp4",
         orientation: "landscape",
+        poster: "/screenshots/watchThis.jpg",
     },
     {
         id: "studybuddy",
@@ -17,5 +18,6 @@ export const projects = [
         href: "/projects/studybuddy/",
         video: "/videos/studybuddy.mp4",
         orientation: "portrait",
+        poster: "/screenshots/studyBuddy.jpg",
     },
 ];

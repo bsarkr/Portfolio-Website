@@ -11,6 +11,7 @@ export const projectDetails = {
         tagline: "A clean, fast movie explorer with lists, search, and trailers — Netflix-inspired UI with a full MVC backend.",
         demoUrl: "https://youtu.be/A6EmARngpug",  // External demo video
         video: "/videos/watchThis.mp4",           // Local demo video asset
+        poster: "/screenshots/watchThis.jpg",
 
         // Technologies grouped by frontend, backend, and tools
         tech: {
